@@ -1,5 +1,6 @@
 import MediaPipeTasksVision
 import CoreImage
+import CoreVideo
 import UIKit
 
 class SelfieSegmenterHelper {
@@ -40,20 +41,20 @@ class SelfieSegmenterHelper {
         guard let mpImage = try? MPImage(uiImage: uiImage) else { return nil }
 
         guard let result = try? segmenter.segment(image: mpImage) else { return nil }
-        let masks = result.confidenceMasks
-        guard masks.count >= 2 else { return nil }
+        guard let masks = result.confidenceMasks, masks.count >= 2 else { return nil }
 
-        let personMaskCG = masks[1].image
-        let mw = personMaskCG.width
-        let mh = personMaskCG.height
+        let personMaskBuffer = masks[1].imageBuffer
+        let mw = CVPixelBufferGetWidth(personMaskBuffer)
+        let mh = CVPixelBufferGetHeight(personMaskBuffer)
 
+        CVPixelBufferLockBaseAddress(personMaskBuffer, .readOnly)
         var pixelData = [UInt8](repeating: 0, count: mw * mh)
-        let colorSpace = CGColorSpaceCreateDeviceGray()
-        guard let ctx = CGContext(data: &pixelData, width: mw, height: mh,
-                                  bitsPerComponent: 8, bytesPerRow: mw,
-                                  space: colorSpace,
-                                  bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
-        ctx.draw(personMaskCG, in: CGRect(x: 0, y: 0, width: mw, height: mh))
+        let base = CVPixelBufferGetBaseAddress(personMaskBuffer)!
+        let srcRow = CVPixelBufferGetBytesPerRow(personMaskBuffer)
+        for y in 0..<mh {
+            memcpy(&pixelData[y * mw], base + y * srcRow, mw)
+        }
+        CVPixelBufferUnlockBaseAddress(personMaskBuffer, .readOnly)
         return Data(pixelData)
     }
 

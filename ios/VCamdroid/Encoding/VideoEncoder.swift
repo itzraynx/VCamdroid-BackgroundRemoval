@@ -109,8 +109,8 @@ class VideoEncoder {
     }
 }
 
-private let encodingCallback: VTCompressionOutputCallback = { refcon, _, _, status, infoFlags, sampleBuffer in
-    guard status == noErr, let sb = sampleBuffer else { return }
+private let encodingCallback: VTCompressionOutputCallback = { refcon, _, status, _, sampleBuffer in
+    guard status == noErr, let sb = sampleBuffer, let refcon else { return }
     let encoder = Unmanaged<VideoEncoder>.fromOpaque(refcon).takeUnretainedValue()
     encoder.handleOutput(sampleBuffer: sb)
 }
