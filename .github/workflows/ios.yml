@@ -42,8 +42,16 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             clean build
 
-      - name: Upload .app
+      - name: Package unsigned .ipa
+        run: |
+          APP_PATH="build/Build/Products/Release-iphoneos/VCamdroid.app"
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r VCamdroid.ipa Payload/
+          rm -rf Payload
+
+      - name: Upload .ipa
         uses: actions/upload-artifact@v4
         with:
           name: vcamdroid-ios-unsigned
-          path: ios/build/Build/Products/Release-iphoneos/VCamdroid.app
+          path: ios/VCamdroid.ipa
