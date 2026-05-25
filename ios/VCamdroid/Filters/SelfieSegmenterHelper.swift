@@ -20,8 +20,6 @@ class SelfieSegmenterHelper {
         let baseOptions = BaseOptions()
         baseOptions.modelAssetPath = modelPath
 
-        baseOptions.delegate = .cpu
-
         let options = ImageSegmenterOptions()
         options.baseOptions = baseOptions
         options.runningMode = .image
