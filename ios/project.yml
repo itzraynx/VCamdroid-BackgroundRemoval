@@ -2,7 +2,7 @@ name: VCamdroid
 options:
   bundleIdPrefix: com.darusc
   deploymentTarget:
-    iOS: "13.0"
+    iOS: "15.0"
 settings:
   SWIFT_VERSION: "5.0"
 targets:
@@ -17,4 +17,4 @@ targets:
       MARKETING_VERSION: "1.0"
       CURRENT_PROJECT_VERSION: "1"
       TARGETED_DEVICE_FAMILY: "1,2"
-      IPHONEOS_DEPLOYMENT_TARGET: "13.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "15.0"
