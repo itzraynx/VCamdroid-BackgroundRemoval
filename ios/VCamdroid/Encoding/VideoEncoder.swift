@@ -33,7 +33,7 @@ class VideoEncoder {
             kVTCompressionPropertyKey_AverageBitRate: 4_000_000,
             kVTCompressionPropertyKey_MaxKeyFrameInterval: 30,
         ]
-        VTSessionSetProperties(session, props as CFDictionary)
+        VTSessionSetProperties(session, propertyDictionary: props as CFDictionary)
         VTCompressionSessionPrepareToEncodeFrames(session)
         Logger.log("VideoEncoder started \(width)x\(height)")
     }
