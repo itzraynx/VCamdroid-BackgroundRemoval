@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import com.darusc.vcamdroid.util.Logger
 import com.google.mediapipe.framework.image.BitmapImageBuilder
-import com.google.mediapipe.framework.image.FloatImage
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.core.Delegate
@@ -58,13 +57,13 @@ object SelfieSegmenterHelper {
             maskWidth = personMask.width
             maskHeight = personMask.height
 
-            val floatImage = personMask.getContainer(FloatImage::class.java)
-            val floatBuf = floatImage.buffer
-            floatBuf.order(ByteOrder.nativeOrder())
+            val maskBuf = personMask.getBuffer()
+            maskBuf.order(ByteOrder.nativeOrder())
+            val floatBuf = maskBuf.asFloatBuffer()
             val numPixels = maskWidth * maskHeight
             val byteMask = ByteBuffer.allocateDirect(numPixels).order(ByteOrder.nativeOrder())
             for (i in 0 until numPixels) {
-                val f = floatBuf.getFloat(i * 4)
+                val f = floatBuf.get(i)
                 val b = (f * 255.0f).toInt().coerceIn(0, 255)
                 byteMask.put(b.toByte())
             }
