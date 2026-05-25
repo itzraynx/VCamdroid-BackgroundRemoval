@@ -32,7 +32,7 @@ jobs:
           & "$vcpkg\vcpkg.exe" integrate install
 
       - name: Build softcam library
-        run: msbuild windows\3rdparty\softcam\softcam.sln /p:Configuration=Release /p:Platform=x64 /m
+        run: msbuild windows\3rdparty\softcam\src\softcam\softcam.vcxproj /p:Configuration=Release /p:Platform=x64 /m
 
       - name: Build softcam installer
         run: msbuild windows\3rdparty\softcam\examples\softcam_installer.sln /p:Configuration=Release /p:Platform=x64 /m
