@@ -62,7 +62,7 @@ class VideoEncoder {
         onEncoded = nil
     }
 
-    private func handleOutput(sampleBuffer: CMSampleBuffer) {
+    fileprivate func handleOutput(sampleBuffer: CMSampleBuffer) {
         guard let onEncoded, let dataBuffer = CMSampleBufferGetDataBuffer(sampleBuffer) else { return }
 
         var length: Int = 0

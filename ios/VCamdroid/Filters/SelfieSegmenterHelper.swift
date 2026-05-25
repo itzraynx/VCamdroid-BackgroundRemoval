@@ -43,7 +43,7 @@ class SelfieSegmenterHelper {
         guard let result = try? segmenter.segment(image: mpImage) else { return nil }
         guard let masks = result.confidenceMasks, masks.count >= 2 else { return nil }
 
-        let personMaskBuffer = masks[1].imageBuffer
+        let personMaskBuffer = masks[1].imageBuffer()
         let mw = CVPixelBufferGetWidth(personMaskBuffer)
         let mh = CVPixelBufferGetHeight(personMaskBuffer)
 
