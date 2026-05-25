@@ -3,6 +3,7 @@ package com.darusc.vcamdroid.video
 import android.content.Context
 import android.graphics.Bitmap
 import com.darusc.vcamdroid.util.Logger
+import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.core.Delegate
@@ -27,7 +28,6 @@ object SelfieSegmenterHelper {
                 .build()
             val options = ImageSegmenter.ImageSegmenterOptions.builder()
                 .setBaseOptions(baseOptions)
-                .setOutputType(ImageSegmenter.OutputType.CONFIDENCE_MASK)
                 .build()
             segmenter = ImageSegmenter.createFromOptions(context, options)
             initialized = true
@@ -48,13 +48,13 @@ object SelfieSegmenterHelper {
             }
             reusableBitmap!!.copyPixelsFromBuffer(pixelBuffer)
 
-            val mpImage = MPImage.fromBitmap(reusableBitmap!!)
+            val mpImage = BitmapImageBuilder(reusableBitmap!!).build()
             val result = segmenter!!.segment(mpImage)
-            val masks = result.confidenceMasks()
+            val masks = result.confidenceMasks.orElse(null) ?: return null
             if (masks.size < 2) return null
 
             val personMask = masks[1]
-            val maskBuf: ByteBuffer = personMask.buffer
+            val maskBuf = personMask.getContainer(ByteBuffer::class.java)
             maskWidth = personMask.width
             maskHeight = personMask.height
 
