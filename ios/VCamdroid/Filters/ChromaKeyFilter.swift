@@ -17,8 +17,8 @@ class ChromaKeyFilter {
 
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         CVPixelBufferLockBaseAddress(out, [])
-        let src = CVPixelBufferGetBaseAddress(pixelBuffer).assumingMemoryBound(to: UInt8.self)
-        let dst = CVPixelBufferGetBaseAddress(out).assumingMemoryBound(to: UInt8.self)
+        let src = CVPixelBufferGetBaseAddress(pixelBuffer)!.assumingMemoryBound(to: UInt8.self)
+        let dst = CVPixelBufferGetBaseAddress(out)!.assumingMemoryBound(to: UInt8.self)
         let srcRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
         let dstRow = CVPixelBufferGetBytesPerRow(out)
 

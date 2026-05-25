@@ -4,7 +4,7 @@ import CoreMedia
 class RTPPacketizer {
     private let mtu = 1400
     private var sequenceNumber: UInt16 = 0
-    private let ssrc: UInt32 = arc4random()
+    let ssrc: UInt32 = arc4random()
     private let payloadType: UInt8 = 96
 
     func packetize(nalUnit: Data, timestamp: CMTime) -> [Data] {

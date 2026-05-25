@@ -18,13 +18,12 @@ class SelfieSegmenterHelper {
             return
         }
 
-        let baseOptions = BaseOptions(modelAssetPath: modelPath)
-        baseOptions.delegate = .cpu
+        let baseOptions = BaseOptions()
+        baseOptions.modelAssetPath = modelPath
 
         let options = ImageSegmenterOptions()
         options.baseOptions = baseOptions
         options.runningMode = .image
-        options.outputType = .confidenceMask
 
         segmenter = try? ImageSegmenter(options: options)
         initialized = segmenter != nil
