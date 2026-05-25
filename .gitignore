@@ -1,0 +1,11 @@
+dist
+*.apk
+*.aab
+*.ap_
+*.dex
+bin/
+gen/
+build/
+.idea/
+*.iml
+local.properties
