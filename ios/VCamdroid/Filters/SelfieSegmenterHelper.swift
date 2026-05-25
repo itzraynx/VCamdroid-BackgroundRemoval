@@ -1,6 +1,5 @@
 import MediaPipeTasksVision
 import CoreImage
-import CoreVideo
 import UIKit
 
 class SelfieSegmenterHelper {
@@ -8,7 +7,6 @@ class SelfieSegmenterHelper {
 
     private var segmenter: ImageSegmenter?
     private var initialized = false
-    private let ciContext = CIContext()
 
     private init() {}
 
@@ -21,6 +19,8 @@ class SelfieSegmenterHelper {
 
         let baseOptions = BaseOptions()
         baseOptions.modelAssetPath = modelPath
+
+        baseOptions.delegate = .cpu
 
         let options = ImageSegmenterOptions()
         options.baseOptions = baseOptions
@@ -43,19 +43,9 @@ class SelfieSegmenterHelper {
         guard let result = try? segmenter.segment(image: mpImage) else { return nil }
         guard let masks = result.confidenceMasks, masks.count >= 2 else { return nil }
 
-        let personMaskBuffer = masks[1].imageBuffer()
-        let mw = CVPixelBufferGetWidth(personMaskBuffer)
-        let mh = CVPixelBufferGetHeight(personMaskBuffer)
-
-        CVPixelBufferLockBaseAddress(personMaskBuffer, .readOnly)
-        var pixelData = [UInt8](repeating: 0, count: mw * mh)
-        let base = CVPixelBufferGetBaseAddress(personMaskBuffer)!
-        let srcRow = CVPixelBufferGetBytesPerRow(personMaskBuffer)
-        for y in 0..<mh {
-            memcpy(&pixelData[y * mw], base + y * srcRow, mw)
-        }
-        CVPixelBufferUnlockBaseAddress(personMaskBuffer, .readOnly)
-        return Data(pixelData)
+        let mw = masks[1].width
+        let mh = masks[1].height
+        return Data(bytes: masks[1].uint8Data, count: mw * mh)
     }
 
     func close() {
