@@ -1,0 +1,47 @@
+name: Windows EXE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Install vcpkg dependencies
+        shell: powershell
+        run: |
+          $vcpkg = "C:\vcpkg"
+          if (-not (Test-Path "$vcpkg\vcpkg.exe")) {
+            git clone https://github.com/Microsoft/vcpkg.git $vcpkg
+            & "$vcpkg\bootstrap-vcpkg.bat" -disableMetrics
+          }
+          & "$vcpkg\vcpkg.exe" install asio --triplet x64-windows
+          & "$vcpkg\vcpkg.exe" install wxwidgets --triplet x64-windows
+          & "$vcpkg\vcpkg.exe" integrate install
+
+      - name: Build softcam library
+        run: msbuild windows\3rdparty\softcam\softcam.sln /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Build softcam installer
+        run: msbuild windows\3rdparty\softcam\examples\softcam_installer.sln /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Build VCamdroid
+        run: msbuild windows\VCamdroid.sln /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vcamdroid-windows
+          path: windows\dist\*
